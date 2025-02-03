@@ -27,15 +27,31 @@ class UserViewModel {
     SQLiteService.insertApplication(application);
   }
 
-  addProbe(name, probe_type_id, sub_category_id, application_id) {
-    SQLiteService.insertProbe(name, probe_type_id, sub_category_id, application_id);
+  addProbe(name, probe_type_id, sub_category_id, application_id, image_path) {
+    SQLiteService.insertProbe(name, probe_type_id, sub_category_id, application_id, image_path);
   }
 
   fetchProbes(callback) {
     SQLiteService.getProbes((probes) => {
-      this.probes = probes.map(probe => new Probe(probe.id, probe.name, probe.probe_type_id, probe.sub_category_id, probe.application_id));
+      this.probes = probes.map(probe => new Probe(probe.id, probe.name, probe.probe_type_id, probe.sub_category_id, probe.application_id, probe.image_path));
       callback(this.probes);
     });
+  }
+
+  fetchProbeTypes(callback) {
+    SQLiteService.getProbeTypes(callback);
+  }
+
+  fetchCategories(callback) {
+    SQLiteService.getCategories(callback);
+  }
+
+  fetchSubCategories(callback) {
+    SQLiteService.getSubCategories(callback);
+  }
+
+  fetchApplications(callback) {
+    SQLiteService.getApplications(callback);
   }
 }
 

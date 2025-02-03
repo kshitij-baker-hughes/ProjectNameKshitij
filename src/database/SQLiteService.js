@@ -1,4 +1,3 @@
-// filepath: /src/database/SQLiteService.js
 import SQLite from 'react-native-sqlite-storage';
 
 class SQLiteService {
@@ -16,7 +15,9 @@ class SQLiteService {
   }
 
   createTables() {
+    
     this.db.transaction(tx => {
+        tx.executeSql('DROP TABLE IF EXISTS Probes;');
       tx.executeSql(
         `CREATE TABLE IF NOT EXISTS ProbeTypes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +51,7 @@ class SQLiteService {
           probe_type_id INTEGER,
           sub_category_id INTEGER,
           application_id INTEGER,
+          image_path TEXT,
           FOREIGN KEY (probe_type_id) REFERENCES ProbeTypes(id),
           FOREIGN KEY (sub_category_id) REFERENCES SubCategories(id),
           FOREIGN KEY (application_id) REFERENCES Applications(id)
@@ -82,9 +84,29 @@ class SQLiteService {
     });
   }
 
-  insertProbe(name, probe_type_id, sub_category_id, application_id) {
+  insertProbe(name, probe_type_id, sub_category_id, application_id, image_path) {
     this.db.transaction(tx => {
-      tx.executeSql('INSERT INTO Probes (name, probe_type_id, sub_category_id, application_id) VALUES (?, ?, ?, ?);', [name, probe_type_id, sub_category_id, application_id]);
+      tx.executeSql(
+        'INSERT INTO Probes (name, probe_type_id, sub_category_id, application_id, image_path) VALUES (?, ?, ?, ?, ?);',
+        [name, probe_type_id, sub_category_id, application_id, image_path],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            console.log('Inserted row:', {
+              id: results.insertId,
+              name,
+              probe_type_id,
+              sub_category_id,
+              application_id,
+              image_path
+            });
+          } else {
+            console.log('Insert failed');
+          }
+        },
+        error => {
+          console.log('Insert error hua hai :', error);
+        }
+      );
     });
   }
 
@@ -99,6 +121,66 @@ class SQLiteService {
           });
         }
         callback(probes);
+      });
+    });
+  }
+
+  getProbeTypes(callback) {
+    this.db.transaction(tx => {
+      tx.executeSql('SELECT * FROM ProbeTypes;', [], (tx, results) => {
+        const rows = results.rows;
+        let probeTypes = [];
+        for (let i = 0; i < rows.length; i++) {
+          probeTypes.push({
+            ...rows.item(i),
+          });
+        }
+        callback(probeTypes);
+      });
+    });
+  }
+
+  getCategories(callback) {
+    this.db.transaction(tx => {
+      tx.executeSql('SELECT * FROM Categories;', [], (tx, results) => {
+        const rows = results.rows;
+        let categories = [];
+        for (let i = 0; i < rows.length; i++) {
+          categories.push({
+            ...rows.item(i),
+          });
+        }
+        callback(categories);
+      });
+    });
+  }
+
+  getSubCategories(callback) {
+    this.db.transaction(tx => {
+      tx.executeSql('SELECT * FROM SubCategories;', [], (tx, results) => {
+        const rows = results.rows;
+        let subCategories = [];
+        for (let i = 0; i < rows.length; i++) {
+          subCategories.push({
+            ...rows.item(i),
+          });
+        }
+        callback(subCategories);
+      });
+    });
+  }
+
+  getApplications(callback) {
+    this.db.transaction(tx => {
+      tx.executeSql('SELECT * FROM Applications;', [], (tx, results) => {
+        const rows = results.rows;
+        let applications = [];
+        for (let i = 0; i < rows.length; i++) {
+          applications.push({
+            ...rows.item(i),
+          });
+        }
+        callback(applications);
       });
     });
   }
