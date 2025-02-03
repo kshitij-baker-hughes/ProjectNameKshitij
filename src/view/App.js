@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { SafeAreaView, Text, ScrollView, View, Image, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import UserViewModel from '../viewmodel/UserViewModel';
-import imagePaths from './imagePaths';
+import ProbeList from '../components/ProbeList';
 
 class App extends Component {
   constructor(props) {
@@ -105,18 +105,13 @@ class App extends Component {
   render() {
     return (
       <SafeAreaView>
-        <ScrollView contentContainerStyle={styles.container}>
-          {this.state.probes.map((probe, index) => (
-            <View key={index} style={styles.probeContainer}>
-              <Image source={imagePaths[probe.image_path]} style={styles.image} />
-              <Text style={styles.text}>Name: {probe.name}</Text>
-              <Text style={styles.text}>Type: {this.state.probeTypes[probe.probe_type_id]}</Text>
-              <Text style={styles.text}>Category: {this.state.categories[probe.sub_category_id]}</Text>
-              <Text style={styles.text}>Sub Category: {this.state.subCategories[probe.sub_category_id]}</Text>
-              <Text style={styles.text}>Application: {this.state.applications[probe.application_id]}</Text>
-            </View>
-          ))}
-        </ScrollView>
+        <ProbeList
+          probes={this.state.probes}
+          probeTypes={this.state.probeTypes}
+          categories={this.state.categories}
+          subCategories={this.state.subCategories}
+          applications={this.state.applications}
+        />
       </SafeAreaView>
     );
   }
@@ -128,23 +123,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 16,
-  },
-  probeContainer: {
-    width: '48%',
-    marginBottom: 16,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-  },
-  image: {
-    width: '100%',
-    height: 100,
-    marginBottom: 8,
-  },
-  text: {
-    fontSize: 14,
-    marginBottom: 4,
   },
 });
 
