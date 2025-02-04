@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import UserViewModel from '../viewmodel/UserViewModel';
+import UserViewModel from '../viewmodel/ProbeFetchViewModel';
 import ProbeList from '../components/ProbeList';
+import FilterComponent from '../components/FilterComponent';
 
 class App extends Component {
   constructor(props) {
@@ -47,18 +48,36 @@ class App extends Component {
     this.userViewModel.addApplication('Wall Thickness');
     this.userViewModel.addApplication('Rough Surfaces');
     for (let i = 1; i <= 30; i++) {
-      this.userViewModel.addProbe(`Probe${i}`, 1, 1, 1, `Probe_${i % 2 + 1}.jpg`);
+      const probeTypeId = i % 2 === 0 ? 1 : 2; // Alternate between 1 and 2
+      const categoryId = i % 2 === 0 ? 1 : 2; // Alternate between 1 and 2
+      const subCategoryId = (i % 8) + 1; // Cycle through 1 to 8
+      const applicationId = (i % 3) + 1; // Cycle through 1 to 3
+      const imageId = i % 2 + 1;
+      const image_path_formed = `Probe_${imageId}.jpg`;
+      //console.log("Image Path at Home Screen is : "+image_path_formed);
+      this.userViewModel.addProbe(`Probe${i}`, probeTypeId, categoryId, subCategoryId, applicationId, image_path_formed);
     }
     this.userViewModel.fetchProbes(this.setProbes);
+
+    this.state.probes.map((probe, index) => {
+      //console.log("Hello I am here !!!! : " + probe.image_path);
+    });
     this.userViewModel.fetchProbeTypes(this.setProbeTypes);
     this.userViewModel.fetchCategories(this.setCategories);
     this.userViewModel.fetchSubCategories(this.setSubCategories);
     this.userViewModel.fetchApplications(this.setApplications);
+
+    // Log all probes after insertion
+    this.userViewModel.logAllProbes();
   }
 
   setProbes = (probes) => {
+    console.log('Setting Probes:', probes);
     if (this._isMounted) {
-      this.setState({ probes });
+      
+      this.setState({ probes }, () => {
+        console.log('Updated State Probes:', this.state.probes); // Log the updated state
+      });
     }
   }
 
@@ -102,9 +121,17 @@ class App extends Component {
     }
   }
 
+  handleFilterChange = (selectedCategories, selectedApplications) => {
+    this.userViewModel.fetchFilteredProbes(selectedCategories, selectedApplications, this.setProbes);
+  }
+
   render() {
+    this.state.probes.map((probe, index) => {
+      //console.log("In Home Screen component, image path passed is : " + probe.image_path);
+    });
     return (
       <SafeAreaView>
+        <FilterComponent onFilterChange={this.handleFilterChange} />
         <ProbeList
           probes={this.state.probes}
           probeTypes={this.state.probeTypes}

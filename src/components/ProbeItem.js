@@ -4,14 +4,20 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import imagePaths from '../utils/imagePaths';
 
 const ProbeItem = ({ probe, probeTypes, categories, subCategories, applications }) => {
+
+  //console.log('Image Path:', probe.image_path); // Log the image path to the console
+
+  const imageSource = imagePaths[probe.image_path]; // Fallback to a default image if not found
+
   return (
     <View style={styles.probeContainer}>
-      <Image source={imagePaths[probe.image_path]} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
       <Text style={styles.text}>Name: {probe.name}</Text>
       <Text style={styles.text}>Type: {probeTypes[probe.probe_type_id]}</Text>
-      <Text style={styles.text}>Category: {categories[probe.sub_category_id]}</Text>
+      <Text style={styles.text}>Category: {categories[probe.category_id]}</Text>
       <Text style={styles.text}>Sub Category: {subCategories[probe.sub_category_id]}</Text>
       <Text style={styles.text}>Application: {applications[probe.application_id]}</Text>
+      <Text style={styles.text}>Image Path: {probe.image_path}</Text>
     </View>
   );
 };

@@ -15,9 +15,8 @@ class SQLiteService {
   }
 
   createTables() {
-    
     this.db.transaction(tx => {
-        tx.executeSql('DROP TABLE IF EXISTS Probes;');
+      tx.executeSql('DROP TABLE IF EXISTS Probes;');
       tx.executeSql(
         `CREATE TABLE IF NOT EXISTS ProbeTypes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,10 +48,12 @@ class SQLiteService {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT UNIQUE,
           probe_type_id INTEGER,
+          category_id INTEGER,
           sub_category_id INTEGER,
           application_id INTEGER,
           image_path TEXT,
           FOREIGN KEY (probe_type_id) REFERENCES ProbeTypes(id),
+          FOREIGN KEY (category_id) REFERENCES Categories(id),
           FOREIGN KEY (sub_category_id) REFERENCES SubCategories(id),
           FOREIGN KEY (application_id) REFERENCES Applications(id)
         );`
@@ -84,27 +85,41 @@ class SQLiteService {
     });
   }
 
-  insertProbe(name, probe_type_id, sub_category_id, application_id, image_path) {
+  insertProbe(name, probe_type_id, category_id, sub_category_id, application_id, image_path) {
     this.db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO Probes (name, probe_type_id, sub_category_id, application_id, image_path) VALUES (?, ?, ?, ?, ?);',
-        [name, probe_type_id, sub_category_id, application_id, image_path],
+        'SELECT * FROM Probes WHERE name = ?;',
+        [name],
         (tx, results) => {
-          if (results.rowsAffected > 0) {
-            console.log('Inserted row:', {
-              id: results.insertId,
-              name,
-              probe_type_id,
-              sub_category_id,
-              application_id,
-              image_path
-            });
+          if (results.rows.length > 0) {
+            console.log('Probe with this name already exists:', name);
           } else {
-            console.log('Insert failed');
+            tx.executeSql(
+              'INSERT INTO Probes (name, probe_type_id, category_id, sub_category_id, application_id, image_path) VALUES (?, ?, ?, ?, ?, ?);',
+              [name, probe_type_id, category_id, sub_category_id, application_id, image_path],
+              (tx, results) => {
+                if (results.rowsAffected > 0) {
+                  console.log('Inserted row:', {
+                    id: results.insertId,
+                    name,
+                    probe_type_id,
+                    category_id,
+                    sub_category_id,
+                    application_id,
+                    image_path
+                  });
+                } else {
+                  console.log('Insert failed');
+                }
+              },
+              error => {
+                console.log('Insert error:', error);
+              }
+            );
           }
         },
         error => {
-          console.log('Insert error hua hai :', error);
+          console.log('Select error:', error);
         }
       );
     });
@@ -113,6 +128,49 @@ class SQLiteService {
   getProbes(callback) {
     this.db.transaction(tx => {
       tx.executeSql('SELECT * FROM Probes;', [], (tx, results) => {
+        const rows = results.rows;
+        let probes = [];
+        for (let i = 0; i < rows.length; i++) {
+          probes.push({
+            ...rows.item(i),
+          });
+        }
+        callback(probes);
+      });
+    });
+  }
+
+  logAllProbes() {
+    this.db.transaction(tx => {
+      tx.executeSql('SELECT * FROM Probes;', [], (tx, results) => {
+        const rows = results.rows;
+        let probes = [];
+        for (let i = 0; i < rows.length; i++) {
+          probes.push({
+            ...rows.item(i),
+          });
+        }
+        console.log('All Probes:', probes);
+      });
+    });
+  }
+
+  getFilteredProbes(categories, applications, callback) {
+    let query = 'SELECT * FROM Probes WHERE 1=1';
+    const params = [];
+
+    if (categories.length > 0) {
+      query += ' AND category_id IN (SELECT id FROM Categories WHERE category IN (?))';
+      params.push(categories.join(','));
+    }
+
+    if (applications.length > 0) {
+      query += ' AND application_id IN (SELECT id FROM Applications WHERE application IN (?))';
+      params.push(applications.join(','));
+    }
+
+    this.db.transaction(tx => {
+      tx.executeSql(query, params, (tx, results) => {
         const rows = results.rows;
         let probes = [];
         for (let i = 0; i < rows.length; i++) {

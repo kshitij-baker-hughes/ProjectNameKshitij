@@ -1,8 +1,8 @@
-// filepath: /src/view/App.js
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import UserViewModel from '../viewmodel/UserViewModel';
 import ProbeList from '../components/ProbeList';
+import FilterComponent from '../components/FilterComponent';
 
 class App extends Component {
   constructor(props) {
@@ -103,9 +103,14 @@ class App extends Component {
     }
   }
 
+  handleFilterChange = (selectedCategories, selectedApplications) => {
+    this.userViewModel.fetchFilteredProbes(selectedCategories, selectedApplications, this.setProbes);
+  }
+
   render() {
     return (
       <SafeAreaView>
+        <FilterComponent onFilterChange={this.handleFilterChange} />
         <ProbeList
           probes={this.state.probes}
           probeTypes={this.state.probeTypes}
