@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
 import UserViewModel from '../viewmodel/ProbeFetchViewModel';
 import ProbeList from '../components/ProbeList';
 import FilterComponent from '../components/FilterComponent';
-//test comment
-class App extends Component {
+
+class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -53,15 +53,11 @@ class App extends Component {
       const subCategoryId = (i % 8) + 1; // Cycle through 1 to 8
       const applicationId = (i % 3) + 1; // Cycle through 1 to 3
       const imageId = i % 2 + 1;
-      const image_path_formed = `Probe_${imageId}.jpg`;
-      //console.log("Image Path at Home Screen is : "+image_path_formed);
+      const image_path_formed = `Probe_${imageId}.jpg`; // Ensure image path is a string
+      console.log("Image Path at Home Screen is : " + image_path_formed);
       this.userViewModel.addProbe(`Probe${i}`, probeTypeId, categoryId, subCategoryId, applicationId, image_path_formed);
     }
     this.userViewModel.fetchProbes(this.setProbes);
-
-    this.state.probes.map((probe, index) => {
-      //console.log("Hello I am here !!!! : " + probe.image_path);
-    });
     this.userViewModel.fetchProbeTypes(this.setProbeTypes);
     this.userViewModel.fetchCategories(this.setCategories);
     this.userViewModel.fetchSubCategories(this.setSubCategories);
@@ -72,9 +68,8 @@ class App extends Component {
   }
 
   setProbes = (probes) => {
-    console.log('Setting Probes:', probes);
+    console.log('Setting Probes:', probes); // Log the probes being set
     if (this._isMounted) {
-      
       this.setState({ probes }, () => {
         console.log('Updated State Probes:', this.state.probes); // Log the updated state
       });
@@ -92,6 +87,7 @@ class App extends Component {
   }
 
   setCategories = (categories) => {
+    console.log('Fetched Categories:', JSON.stringify(categories, null, 2)); // Log the fetched categories
     if (this._isMounted) {
       const categoryMap = {};
       categories.forEach(cat => {
@@ -122,35 +118,39 @@ class App extends Component {
   }
 
   handleFilterChange = (selectedCategories, selectedApplications) => {
+    console.log('Selected Categories:', selectedCategories); // Log selected categories
+    console.log('Selected Applications:', selectedApplications); // Log selected applications
     this.userViewModel.fetchFilteredProbes(selectedCategories, selectedApplications, this.setProbes);
   }
 
   render() {
     this.state.probes.map((probe, index) => {
-      //console.log("In Home Screen component, image path passed is : " + probe.image_path);
+      console.log("In Home Screen component, image path passed is : " + probe.image_path);
     });
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.safeArea}>
         <FilterComponent onFilterChange={this.handleFilterChange} />
-        <ProbeList
-          probes={this.state.probes}
-          probeTypes={this.state.probeTypes}
-          categories={this.state.categories}
-          subCategories={this.state.subCategories}
-          applications={this.state.applications}
-        />
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <ProbeList
+            probes={this.state.probes}
+            probeTypes={this.state.probeTypes}
+            categories={this.state.categories}
+            subCategories={this.state.subCategories}
+            applications={this.state.applications}
+          />
+        </ScrollView>
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 16,
+  safeArea: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    paddingBottom: 16, // Add padding at the bottom
   },
 });
 
-export default App;
+export default HomeScreen;
