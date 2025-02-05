@@ -14,10 +14,9 @@ const ProbeItem = ({ probe, probeTypes, categories, subCategories, applications 
       <Image source={imageSource} style={styles.image} />
       <Text style={styles.text}>Name: {probe.name}</Text>
       <Text style={styles.text}>Type: {probeTypes[probe.probe_type_id]}</Text>
-      <Text style={styles.text}>Category: {categories[probe.category_id]}</Text>
+      <Text style={styles.text}>Category: {categories[probe.probe_category_id]}</Text>
       <Text style={styles.text}>Sub Category: {subCategories[probe.sub_category_id]}</Text>
       <Text style={styles.text}>Application: {applications[probe.application_id]}</Text>
-      <Text style={styles.text}>Image Path: {probe.image_path}</Text>
     </View>
   );
 };
