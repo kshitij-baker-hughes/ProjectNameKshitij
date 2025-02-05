@@ -46,9 +46,14 @@ const FilterComponent = ({ onFilterChange }) => {
           rightText="Plastics"
         />
         <CheckBox
-          isChecked={selectedApplication.includes('Composites')}
-          onClick={() => handleApplicationChange('Composites')}
-          rightText="Composites"
+          isChecked={selectedApplication.includes('Wall Thickness')}
+          onClick={() => handleApplicationChange('Wall Thickness')}
+          rightText="Wall Thickness"
+        />
+        <CheckBox
+          isChecked={selectedApplication.includes('Rough Surfaces')}
+          onClick={() => handleApplicationChange('Rough Surfaces')}
+          rightText="Rough Surfaces"
         />
       </View>
     </View>

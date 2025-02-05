@@ -155,20 +155,22 @@ class SQLiteService {
     });
   }
 
+  
+
   getFilteredProbes(categories, applications, callback) {
     let query = 'SELECT * FROM Probes WHERE 1=1';
     const params = [];
-
+  
     if (categories.length > 0) {
-      query += ' AND category_id IN (SELECT id FROM Categories WHERE category IN (?))';
-      params.push(categories.join(','));
+      query += ' AND category_id IN (SELECT id FROM Categories WHERE category IN (' + categories.map(() => '?').join(',') + '))';
+      params.push(...categories);
     }
-
+  
     if (applications.length > 0) {
-      query += ' AND application_id IN (SELECT id FROM Applications WHERE application IN (?))';
-      params.push(applications.join(','));
+      query += ' AND application_id IN (SELECT id FROM Applications WHERE application IN (' + applications.map(() => '?').join(',') + '))';
+      params.push(...applications);
     }
-
+  
     this.db.transaction(tx => {
       tx.executeSql(query, params, (tx, results) => {
         const rows = results.rows;
