@@ -1,14 +1,10 @@
-// filepath: /src/components/ProbeList.js
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import ProbeItem from './ProbeItem';
 
 const ProbeList = ({ probes, probeTypes, categories, subCategories, applications }) => {
-  probes.map((probe, index) => {
-    //console.log("In Probe List component, image path is : " + probe.image_path);
-  });
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       {probes.map((probe, index) => (
         <ProbeItem
           key={index}
@@ -19,7 +15,7 @@ const ProbeList = ({ probes, probeTypes, categories, subCategories, applications
           applications={applications}
         />
       ))}
-    </ScrollView>
+    </View>
   );
 };
 

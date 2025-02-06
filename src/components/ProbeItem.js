@@ -1,12 +1,8 @@
-// filepath: /src/components/ProbeItem.js
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import imagePaths from '../utils/imagePaths';
 
 const ProbeItem = ({ probe, probeTypes, categories, subCategories, applications }) => {
-
-  //console.log('Image Path:', probe.image_path); // Log the image path to the console
-
   const imageSource = imagePaths[probe.image_path]; // Fallback to a default image if not found
 
   return (
@@ -14,10 +10,9 @@ const ProbeItem = ({ probe, probeTypes, categories, subCategories, applications 
       <Image source={imageSource} style={styles.image} />
       <Text style={styles.text}>Name: {probe.name}</Text>
       <Text style={styles.text}>Type: {probeTypes[probe.probe_type_id]}</Text>
-      <Text style={styles.text}>Category: {categories[probe.category_id]}</Text>
+      <Text style={styles.text}>Category: {categories[probe.probe_category_id]}</Text>
       <Text style={styles.text}>Sub Category: {subCategories[probe.sub_category_id]}</Text>
       <Text style={styles.text}>Application: {applications[probe.application_id]}</Text>
-      <Text style={styles.text}>Image Path: {probe.image_path}</Text>
     </View>
   );
 };
@@ -25,7 +20,7 @@ const ProbeItem = ({ probe, probeTypes, categories, subCategories, applications 
 const styles = StyleSheet.create({
   probeContainer: {
     width: '48%',
-    marginBottom: 16,
+    marginBottom: 16, // Add margin at the bottom
     padding: 8,
     borderWidth: 1,
     borderColor: '#ccc',
